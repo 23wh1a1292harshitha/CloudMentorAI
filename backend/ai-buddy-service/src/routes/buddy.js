@@ -33,7 +33,7 @@ router.get("/recommendation", requireAuth, (req, res) => {
 });
 
 // POST /buddy/chat { user_id, message }
-router.post("/chat", requireAuth, (req, res) => {
+router.post("/chat", requireAuth, async (req, res) => {
   const { message } = req.body;
   const userId = req.user.id;
 
@@ -41,18 +41,17 @@ router.post("/chat", requireAuth, (req, res) => {
     return res.status(400).json({ error: "message is required" });
   }
 
-  // TODO: replace this rule-based stub with a real call to the Anthropic API.
-  // Example:
-  //   const response = await fetch("https://api.anthropic.com/v1/messages", { ... })
-  // Keep the response shape { reply, escalate_to_mentor, suggested_mentor_id? } stable
-  // so the frontend and Skill Exchange integration don't need to change.
-
+  const lower = message.toLowerCase();
   const mastery = mockMastery[userId] || [];
   const strugglingTopic = mastery.find(
     (m) => m.mastery_score < ESCALATION_THRESHOLD && m.attempts >= MIN_ATTEMPTS_BEFORE_ESCALATION
   );
 
-  if (strugglingTopic) {
+  // Only escalate when the student is actually asking for help/a mentor,
+  // AND there's real evidence (mastery data) that escalation is warranted.
+  const askedForHelp = /\b(stuck|help|mentor|confused|struggl|don'?t understand|can'?t figure)\b/.test(lower);
+
+  if (askedForHelp && strugglingTopic) {
     return res.json({
       reply: `I've noticed you've attempted "${strugglingTopic.topic}" ${strugglingTopic.attempts} times with a mastery score of ${strugglingTopic.mastery_score}/100. A live session might help more than text at this point.`,
       escalate_to_mentor: true,
@@ -60,10 +59,54 @@ router.post("/chat", requireAuth, (req, res) => {
     });
   }
 
-  res.json({
-    reply: `(stub reply) You asked: "${message}". Wire this up to the Anthropic API in src/routes/buddy.js.`,
-    escalate_to_mentor: false,
-  });
+  // Real AI reply via Google's Gemini API (free tier, no credit card needed).
+  if (!process.env.GEMINI_API_KEY) {
+    return res.json({
+      reply: "AI Buddy isn't fully connected yet — GEMINI_API_KEY is missing from .env.",
+      escalate_to_mentor: false,
+    });
+  }
+
+  try {
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `You are AI Buddy, a friendly coding tutor inside a learning platform called CloudMentor AI. A student asked: "${message}". Give a clear, encouraging, concise answer (2-4 sentences unless code is needed).`,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
+
+    const data = await geminiRes.json();
+
+    if (!geminiRes.ok) {
+      console.error("Gemini API error:", data);
+      return res.json({
+        reply: "AI Buddy hit an error talking to Gemini — check the server logs for details.",
+        escalate_to_mentor: false,
+      });
+    }
+
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a reply — try rephrasing your question.";
+
+    res.json({ reply, escalate_to_mentor: false });
+  } catch (err) {
+    console.error("Gemini fetch failed:", err);
+    res.json({
+      reply: "AI Buddy couldn't reach Gemini right now — check your internet connection and API key.",
+      escalate_to_mentor: false,
+    });
+  }
 });
 
 // GET /buddy/weekly-report?user_id=1
