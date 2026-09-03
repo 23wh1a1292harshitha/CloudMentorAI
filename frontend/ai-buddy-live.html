@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Buddy — Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1320; --surface:#171B2C; --surface-2:#1E2338; --border:#2A2F45;
+    --text:#E8EAF2; --text-muted:#8A8FA3;
+    --ai:#6E8BFF; --ai-dim:rgba(110,139,255,0.14);
+    --human:#FFA857; --human-dim:rgba(255,168,87,0.14);
+    --term:#4ADE80; --term-dim:rgba(74,222,128,0.14);
+    --danger:#FF6B6B; --danger-dim:rgba(255,107,107,0.14);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .app{width:100%; max-width:520px;}
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+  .brand-mark{width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg, var(--ai), var(--human)); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; color:#0F1320;}
+  .brand-name{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px;}
+  .conn-status{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--text-muted); margin-bottom:16px; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 13px;}
+  .dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+  .dot.ok{background:var(--term); box-shadow:0 0 0 3px var(--term-dim);}
+  .dot.bad{background:var(--danger); box-shadow:0 0 0 3px var(--danger-dim);}
+  .dot.wait{background:var(--human); box-shadow:0 0 0 3px var(--human-dim);}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px;}
+  .auth-tabs{display:flex; gap:8px; margin-bottom:14px;}
+  .auth-tab{flex:1; padding:8px; border-radius:8px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); font-size:12.5px; font-weight:600;}
+  .auth-tab.active{background:var(--ai-dim); color:var(--ai); border-color:var(--ai);}
+  input{width:100%; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; color:var(--text); font-size:13px; margin-bottom:10px; outline:none;}
+  input:focus{border-color:var(--ai);}
+  .btn{width:100%; padding:10px; border-radius:8px; border:1px solid var(--ai); background:var(--ai); color:#0B0E1A; font-weight:600; font-size:13px; cursor:pointer;}
+  .btn:disabled{opacity:.5; cursor:not-allowed;}
+  .err{color:var(--danger); font-size:12px; margin-top:8px; display:none;}
+  .err.show{display:block;}
+
+  .chat-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .chat-header .who{font-size:12.5px; color:var(--text-muted);}
+  .logout{font-size:11.5px; color:var(--text-muted); background:none; border:none; text-decoration:underline; cursor:pointer;}
+  .chat-msgs{display:flex; flex-direction:column; gap:12px; max-height:400px; overflow-y:auto; margin-bottom:14px; padding-right:4px;}
+  .msg{max-width:80%; padding:10px 13px; border-radius:11px; font-size:13px; line-height:1.5;}
+  .msg.user{align-self:flex-end; background:var(--surface-2); border:1px solid var(--border);}
+  .msg.ai{align-self:flex-start; background:var(--ai-dim); border:1px solid rgba(110,139,255,.3);}
+  .msg.error{align-self:flex-start; background:var(--danger-dim); border:1px solid rgba(255,107,107,.3); color:var(--danger);}
+  .escalate{margin-top:8px; background:var(--human-dim); border:1px solid rgba(255,168,87,.4); border-radius:8px; padding:9px 11px; font-size:11.5px;}
+  .chat-input{display:flex; gap:8px;}
+  .chat-input input{margin-bottom:0;}
+  .typing{font-size:11.5px; color:var(--text-muted); font-style:italic;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand"><div class="brand-mark">C</div><div class="brand-name">AI Buddy — Live</div></div>
+  <div class="conn-status" id="conn-status"><span class="dot wait" id="conn-dot"></span><span id="conn-text">Checking connection to http://localhost:4000 ...</span></div>
+
+  <div class="card">
+    <!-- AUTH VIEW -->
+    <div id="auth-view">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="setAuthMode('login')">Log in</button>
+        <button class="auth-tab" id="tab-signup" onclick="setAuthMode('signup')">Sign up</button>
+      </div>
+      <input type="text" id="name-input" placeholder="Name" style="display:none;">
+      <input type="email" id="email-input" placeholder="Email" value="student@test.com">
+      <input type="password" id="password-input" placeholder="Password" value="pass123">
+      <button class="btn" id="auth-btn" onclick="submitAuth()">Log in</button>
+      <div class="err" id="auth-err"></div>
+    </div>
+
+    <!-- CHAT VIEW -->
+    <div id="chat-view" style="display:none;">
+      <div class="chat-header">
+        <span class="who">Logged in as <b id="user-name-display"></b></span>
+        <button class="logout" onclick="logout()">Log out</button>
+      </div>
+      <div class="chat-msgs" id="chat-msgs"></div>
+      <div class="chat-input">
+        <input type="text" id="chat-input-box" placeholder="Ask AI Buddy anything...">
+        <button class="btn" style="width:auto; padding:10px 16px;" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = "http://localhost:4000";
+let authMode = "login";
+let token = null;
+let userName = "";
+
+// --- Connection check ---
+async function checkConnection(){
+  try{
+    const res = await fetch(API_BASE + "/health");
+    const data = await res.json();
+    document.getElementById('conn-dot').className = 'dot ok';
+    document.getElementById('conn-text').textContent = "Connected to AI Buddy backend (" + data.service + ")";
+  }catch(e){
+    document.getElementById('conn-dot').className = 'dot bad';
+    document.getElementById('conn-text').textContent = "Can't reach http://localhost:4000 — is your server running? (npm run dev in backend/ai-buddy-service)";
+  }
+}
+checkConnection();
+
+// --- Auth mode toggle ---
+function setAuthMode(mode){
+  authMode = mode;
+  document.getElementById('tab-login').classList.toggle('active', mode==='login');
+  document.getElementById('tab-signup').classList.toggle('active', mode==='signup');
+  document.getElementById('name-input').style.display = mode==='signup' ? 'block' : 'none';
+  document.getElementById('auth-btn').textContent = mode==='signup' ? 'Sign up' : 'Log in';
+  document.getElementById('auth-err').classList.remove('show');
+}
+
+// --- Real signup/login calls ---
+async function submitAuth(){
+  const errEl = document.getElementById('auth-err');
+  errEl.classList.remove('show');
+  const email = document.getElementById('email-input').value.trim();
+  const password = document.getElementById('password-input').value;
+  const name = document.getElementById('name-input').value.trim();
+  const btn = document.getElementById('auth-btn');
+  btn.disabled = true;
+  btn.textContent = "Please wait...";
+
+  try{
+    const endpoint = authMode === 'signup' ? '/auth/signup' : '/auth/login';
+    const body = authMode === 'signup'
+      ? { name: name || "Student", email, password, role: "student" }
+      : { email, password };
+
+    const res = await fetch(API_BASE + endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error || "Something went wrong");
+    }
+
+    token = data.token;
+    userName = data.user.name;
+    document.getElementById('user-name-display').textContent = userName;
+    document.getElementById('auth-view').style.display = 'none';
+    document.getElementById('chat-view').style.display = 'block';
+  }catch(e){
+    errEl.textContent = e.message + (authMode==='login' ? " — try 'Sign up' if this is your first time." : "");
+    errEl.classList.add('show');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = authMode==='signup' ? 'Sign up' : 'Log in';
+  }
+}
+
+function logout(){
+  token = null;
+  document.getElementById('chat-view').style.display = 'none';
+  document.getElementById('auth-view').style.display = 'block';
+  document.getElementById('chat-msgs').innerHTML = '';
+}
+
+// --- Real chat call ---
+function addMsg(text, cls){
+  const msgs = document.getElementById('chat-msgs');
+  const m = document.createElement('div');
+  m.className = 'msg ' + cls;
+  m.innerHTML = text;
+  msgs.appendChild(m);
+  msgs.scrollTop = msgs.scrollHeight;
+  return m;
+}
+
+async function sendChat(){
+  const input = document.getElementById('chat-input-box');
+  const text = input.value.trim();
+  if(!text || !token) return;
+  input.value = '';
+  addMsg(text, 'user');
+  const typingMsg = addMsg('<span class="typing">AI Buddy is thinking...</span>', 'ai');
+
+  try{
+    const res = await fetch(API_BASE + "/buddy/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ message: text })
+    });
+    const data = await res.json();
+    typingMsg.remove();
+
+    if(!res.ok){
+      addMsg(data.error || "Server returned an error.", 'error');
+      return;
+    }
+
+    let html = data.reply;
+    if(data.escalate_to_mentor){
+      html += `<div class="escalate">🟠 <b>escalate_to_mentor: true</b> — real flag from the backend, topic: ${data.suggested_topic || 'unknown'}</div>`;
+    }
+    addMsg(html, 'ai');
+  }catch(e){
+    typingMsg.remove();
+    addMsg("Couldn't reach the server: " + e.message, 'error');
+  }
+}
+document.getElementById('chat-input-box').addEventListener('keydown', e=>{ if(e.key==='Enter') sendChat(); });
+</script>
+</body>
+</html>
