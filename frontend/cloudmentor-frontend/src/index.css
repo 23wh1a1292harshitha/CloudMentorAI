@@ -1,0 +1,84 @@
+:root {
+  /* ── Core palette ─────────────────────────────────────────────── */
+  --bg:         #0f1320;
+  --surface:    #171b2c;
+  --surface-2:  #1e2338;
+  --surface-3:  #252a40;
+  --border:     #2a2f45;
+  --border-2:   #363d58;
+  --text:       #e8eaf2;
+  --text-muted: #8a8fa3;
+  --text-dim:   #5a6078;
+
+  /* ── Brand accents ────────────────────────────────────────────── */
+  --ai:         #6e8bff;
+  --ai-dim:     rgba(110, 139, 255, 0.14);
+  --ai-glow:    rgba(110, 139, 255, 0.25);
+  --human:      #ffa857;
+  --human-dim:  rgba(255, 168, 87, 0.14);
+  --term:       #4ade80;
+  --term-dim:   rgba(74, 222, 128, 0.14);
+  --danger:     #ff6b6b;
+  --danger-dim: rgba(255, 107, 107, 0.14);
+
+  /* ── Recovery palette ─────────────────────────────────────────── */
+  --recovery:     #f59e0b;
+  --recovery-dim: rgba(245, 158, 11, 0.12);
+  --recovery-border: rgba(245, 158, 11, 0.3);
+
+  /* ── Spacing scale ────────────────────────────────────────────── */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* ── Border radius ────────────────────────────────────────────── */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+  --r-full: 9999px;
+
+  /* ── Type scale ───────────────────────────────────────────────── */
+  --text-xs:  11px;
+  --text-sm:  12.5px;
+  --text-base: 13.5px;
+  --text-md:  15px;
+  --text-lg:  18px;
+  --text-xl:  22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", sans-serif;
+  font-size: var(--text-base);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { cursor: pointer; font-family: inherit; }
+input, textarea, select { font-family: inherit; }
+
+/* ── Global utility classes ───────────────────────────────────────────────── */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border-width: 0;
+}
+
+/* ── Scrollbar styling ────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: var(--r-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }

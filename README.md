@@ -44,13 +44,23 @@ See [`docs/TASK_BOARD.md`](docs/TASK_BOARD.md) for the full sprint-by-sprint bre
 
 ## Getting Started
 
-```bash
-git clone <your-repo-url>
-cd cloudmentor-ai
+AI Buddy + Testing Engine (the current working loop):
 
-# each service has its own README with setup instructions
-# frontend: cd frontend && npm install && npm run dev
+```bash
+# terminal 1
+cd backend/ai-buddy-service
+cp .env.example .env   # set JWT_SECRET and GEMINI_API_KEY
+npm install
+npm run dev            # http://localhost:4000
+
+# terminal 2
+cd backend/testing-engine
+cp .env.example .env   # use the SAME JWT_SECRET as ai-buddy-service
+npm install
+npm run dev            # http://localhost:4001
 ```
+
+Then open `frontend/ai-buddy-live.html` in a browser: sign up, take a quiz, check Progress, then Chat. If you miss questions, Buddy explains them; if a topic stays below 60 after 3+ attempts, asking for help flags a mentor.
 
 ## Branching Strategy
 

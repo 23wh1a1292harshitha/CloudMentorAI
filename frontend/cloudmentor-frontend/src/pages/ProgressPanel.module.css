@@ -1,0 +1,65 @@
+.muted  { font-size: 13px; color: var(--text-muted); }
+.error  { font-size: 13px; color: var(--danger); }
+
+.recCard {
+  background: var(--ai-dim);
+  border: 1px solid rgba(110,139,255,.3);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+.recLabel  { font-size: 11px; color: var(--ai); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.recTopic  { font-size: 18px; font-weight: 700; font-family: "Space Grotesk", sans-serif; margin-bottom: 4px; text-transform: capitalize; }
+.recReason { font-size: 12.5px; color: var(--text-muted); }
+
+.section       { margin-bottom: 20px; }
+.sectionTitle  { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 14px; font-weight: 600; }
+
+.masteryRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.masteryBarWrap { flex: 1; }
+.masteryMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.levelBadge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: .04em;
+}
+.levelBeginner     { background: rgba(255,107,107,.18); color: var(--danger); }
+.levelIntermediate { background: rgba(255,168,87,.18);  color: var(--human); }
+.levelAdvanced     { background: rgba(74,222,128,.18);  color: var(--term); }
+
+.passCount { font-size: 11px; color: var(--text-muted); }
+
+.reportCard {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.reportText { font-size: 13px; margin-bottom: 6px; }
+.reportPlan { font-size: 13px; color: var(--text-muted); }
+
+.refreshBtn {
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--ai);
+  background: transparent;
+  color: var(--ai);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -1,0 +1,72 @@
+.wrapper {
+  width: 100%;
+  max-width: 420px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  flex: 1;
+  padding: 9px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tab.active {
+  background: var(--ai-dim);
+  color: var(--ai);
+  border-color: var(--ai);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+
+.input:focus { border-color: var(--ai); }
+
+.error {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+  border: 1px solid var(--ai);
+  background: var(--ai);
+  color: #0b0e1a;
+  font-weight: 600;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }

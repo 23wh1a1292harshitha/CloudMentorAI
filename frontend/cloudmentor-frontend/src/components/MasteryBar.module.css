@@ -1,0 +1,32 @@
+.row   { margin-bottom: 14px; }
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.topicName { text-transform: capitalize; font-weight: 500; }
+.meta      { color: var(--text-muted); flex-shrink: 0; }
+
+.track {
+  height: 7px;
+  background: var(--surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.track > span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.beginner    { background: var(--danger); }
+.intermediate{ background: var(--human); }
+.advanced    { background: var(--term); }

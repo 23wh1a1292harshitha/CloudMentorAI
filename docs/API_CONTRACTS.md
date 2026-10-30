@@ -15,14 +15,20 @@
 
 ## Testing Engine
 
-- `GET /tests/next?user_id=` → { test_id, questions[] } (based on recent practice topics)
-- `POST /tests/submit` — { test_id, answers[] } → { score, topic_breakdown: [{ topic, mastery_score }] }
+All `/tests/*` routes require `Authorization: Bearer <JWT from AI Buddy>`.
+
+- `GET /tests/next?topic=` → { test_id, questions[] } (omitting topic prefers weak mastery areas)
+- `POST /tests/submit` — { answers: [{ question_id, selected_option_id }] } → { score, topic_breakdown: [{ topic, mastery_score, attempts }], results: [{ question_id, topic, prompt, correct, selected_text, correct_text }] }
+- `GET /tests/mastery` → { mastery: [{ topic, mastery_score, attempts }] }
 
 ## AI Buddy Service
 
-- `POST /buddy/chat` — { user_id, message } → { reply, escalate_to_mentor: bool, suggested_mentor_id? }
-- `GET /buddy/recommendation?user_id=` → { topic, reason }
-- `GET /buddy/weekly-report?user_id=` → { summary_text, next_week_plan }
+Buddy routes require the same JWT. Recommendation / weekly report / chat escalation read mastery from Testing Engine.
+
+- `POST /buddy/chat` — { message } → { reply, escalate_to_mentor: bool, suggested_topic? }
+- `POST /buddy/explain-mistakes` — { missed: [{ prompt, topic, selected_text, correct_text }] } → { explanations }
+- `GET /buddy/recommendation` → { topic, reason }
+- `GET /buddy/weekly-report` → { summary_text, next_week_plan }
 
 ---
 

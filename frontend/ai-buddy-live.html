@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Buddy — Live</title>
+<title>CloudMentor — AI Buddy + Tests</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -17,48 +17,67 @@
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
-  .app{width:100%; max-width:520px;}
+  .app{width:100%; max-width:640px;}
   .brand{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
   .brand-mark{width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg, var(--ai), var(--human)); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; color:#0F1320;}
   .brand-name{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px;}
-  .conn-status{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--text-muted); margin-bottom:16px; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 13px;}
+  .conn-status{display:flex; flex-direction:column; gap:8px; font-size:11.5px; color:var(--text-muted); margin-bottom:16px; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 13px;}
+  .conn-row{display:flex; align-items:center; gap:7px;}
   .dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
   .dot.ok{background:var(--term); box-shadow:0 0 0 3px var(--term-dim);}
   .dot.bad{background:var(--danger); box-shadow:0 0 0 3px var(--danger-dim);}
   .dot.wait{background:var(--human); box-shadow:0 0 0 3px var(--human-dim);}
 
   .card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px;}
-  .auth-tabs{display:flex; gap:8px; margin-bottom:14px;}
-  .auth-tab{flex:1; padding:8px; border-radius:8px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); font-size:12.5px; font-weight:600;}
-  .auth-tab.active{background:var(--ai-dim); color:var(--ai); border-color:var(--ai);}
+  .auth-tabs,.nav{display:flex; gap:8px; margin-bottom:14px;}
+  .auth-tab,.nav-btn{flex:1; padding:8px; border-radius:8px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); font-size:12.5px; font-weight:600; cursor:pointer;}
+  .auth-tab.active,.nav-btn.active{background:var(--ai-dim); color:var(--ai); border-color:var(--ai);}
   input{width:100%; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; color:var(--text); font-size:13px; margin-bottom:10px; outline:none;}
   input:focus{border-color:var(--ai);}
   .btn{width:100%; padding:10px; border-radius:8px; border:1px solid var(--ai); background:var(--ai); color:#0B0E1A; font-weight:600; font-size:13px; cursor:pointer;}
+  .btn.secondary{background:transparent; color:var(--ai);}
   .btn:disabled{opacity:.5; cursor:not-allowed;}
   .err{color:var(--danger); font-size:12px; margin-top:8px; display:none;}
   .err.show{display:block;}
 
-  .chat-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
-  .chat-header .who{font-size:12.5px; color:var(--text-muted);}
+  .chat-header,.panel-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px;}
+  .who{font-size:12.5px; color:var(--text-muted);}
   .logout{font-size:11.5px; color:var(--text-muted); background:none; border:none; text-decoration:underline; cursor:pointer;}
   .chat-msgs{display:flex; flex-direction:column; gap:12px; max-height:400px; overflow-y:auto; margin-bottom:14px; padding-right:4px;}
   .msg{max-width:80%; padding:10px 13px; border-radius:11px; font-size:13px; line-height:1.5;}
   .msg.user{align-self:flex-end; background:var(--surface-2); border:1px solid var(--border);}
-  .msg.ai{align-self:flex-start; background:var(--ai-dim); border:1px solid rgba(110,139,255,.3);}
+  .msg.ai{align-self:flex-start; background:var(--ai-dim); border:1px solid rgba(110,139,255,.3); white-space:pre-wrap;}
   .msg.error{align-self:flex-start; background:var(--danger-dim); border:1px solid rgba(255,107,107,.3); color:var(--danger);}
   .escalate{margin-top:8px; background:var(--human-dim); border:1px solid rgba(255,168,87,.4); border-radius:8px; padding:9px 11px; font-size:11.5px;}
   .chat-input{display:flex; gap:8px;}
   .chat-input input{margin-bottom:0;}
   .typing{font-size:11.5px; color:var(--text-muted); font-style:italic;}
+
+  .q{background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:12px;}
+  .q-prompt{font-size:13.5px; font-weight:600; margin-bottom:10px;}
+  .q-topic{font-size:11px; color:var(--ai); margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;}
+  label.opt{display:flex; gap:8px; align-items:flex-start; font-size:13px; margin-bottom:8px; cursor:pointer; color:var(--text);}
+  label.opt input{width:auto; margin:3px 0 0;}
+  .result-score{font-family:'Space Grotesk',sans-serif; font-size:28px; margin-bottom:8px;}
+  .muted{font-size:12.5px; color:var(--text-muted); line-height:1.5;}
+  .bar-row{margin-bottom:12px;}
+  .bar-label{display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;}
+  .bar{height:8px; background:var(--surface-2); border-radius:99px; overflow:hidden;}
+  .bar > span{display:block; height:100%; background:var(--ai); border-radius:99px;}
+  .bar.weak > span{background:var(--human);}
+  .explain{white-space:pre-wrap; font-size:13px; line-height:1.55; background:var(--ai-dim); border:1px solid rgba(110,139,255,.3); border-radius:10px; padding:12px; margin:12px 0;}
+  .miss{font-size:12.5px; margin-bottom:8px; color:var(--text-muted);}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="brand"><div class="brand-mark">C</div><div class="brand-name">AI Buddy — Live</div></div>
-  <div class="conn-status" id="conn-status"><span class="dot wait" id="conn-dot"></span><span id="conn-text">Checking connection to http://localhost:4000 ...</span></div>
+  <div class="brand"><div class="brand-mark">C</div><div class="brand-name">CloudMentor — Tests + AI Buddy</div></div>
+  <div class="conn-status">
+    <div class="conn-row"><span class="dot wait" id="dot-buddy"></span><span id="text-buddy">Checking AI Buddy on http://localhost:4000 ...</span></div>
+    <div class="conn-row"><span class="dot wait" id="dot-tests"></span><span id="text-tests">Checking Testing Engine on http://localhost:4001 ...</span></div>
+  </div>
 
   <div class="card">
-    <!-- AUTH VIEW -->
     <div id="auth-view">
       <div class="auth-tabs">
         <button class="auth-tab active" id="tab-login" onclick="setAuthMode('login')">Log in</button>
@@ -71,147 +90,312 @@
       <div class="err" id="auth-err"></div>
     </div>
 
-    <!-- CHAT VIEW -->
-    <div id="chat-view" style="display:none;">
-      <div class="chat-header">
+    <div id="app-view" style="display:none;">
+      <div class="panel-header">
         <span class="who">Logged in as <b id="user-name-display"></b></span>
         <button class="logout" onclick="logout()">Log out</button>
       </div>
-      <div class="chat-msgs" id="chat-msgs"></div>
-      <div class="chat-input">
-        <input type="text" id="chat-input-box" placeholder="Ask AI Buddy anything...">
-        <button class="btn" style="width:auto; padding:10px 16px;" onclick="sendChat()">Send</button>
+      <div class="nav">
+        <button class="nav-btn active" id="nav-quiz" onclick="showPanel('quiz')">Quiz</button>
+        <button class="nav-btn" id="nav-progress" onclick="showPanel('progress')">Progress</button>
+        <button class="nav-btn" id="nav-chat" onclick="showPanel('chat')">Chat</button>
+      </div>
+
+      <div id="panel-quiz">
+        <div id="quiz-take"></div>
+        <div id="quiz-result" style="display:none;"></div>
+        <button class="btn" id="quiz-load-btn" onclick="loadQuiz()">Start a quiz</button>
+      </div>
+
+      <div id="panel-progress" style="display:none;">
+        <p class="muted" id="rec-text">Loading recommendation...</p>
+        <div id="mastery-bars" style="margin:16px 0;"></div>
+        <p class="muted" id="report-text"></p>
+        <button class="btn secondary" onclick="loadProgress()">Refresh</button>
+      </div>
+
+      <div id="panel-chat" style="display:none;">
+        <div class="chat-msgs" id="chat-msgs"></div>
+        <div class="chat-input">
+          <input type="text" id="chat-input-box" placeholder="Ask AI Buddy anything...">
+          <button class="btn" style="width:auto; padding:10px 16px;" onclick="sendChat()">Send</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const API_BASE = "http://localhost:4000";
+const BUDDY_API = "http://localhost:4000";
+const TESTS_API = "http://localhost:4001";
 let authMode = "login";
-let token = null;
-let userName = "";
+let token = sessionStorage.getItem("cm_token");
+let userName = sessionStorage.getItem("cm_name") || "";
+let currentTest = null;
 
-// --- Connection check ---
-async function checkConnection(){
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function ping(url, dotId, textId, okLabel, badLabel){
   try{
-    const res = await fetch(API_BASE + "/health");
+    const res = await fetch(url + "/health");
     const data = await res.json();
-    document.getElementById('conn-dot').className = 'dot ok';
-    document.getElementById('conn-text').textContent = "Connected to AI Buddy backend (" + data.service + ")";
+    document.getElementById(dotId).className = "dot ok";
+    document.getElementById(textId).textContent = okLabel + " (" + data.service + ")";
   }catch(e){
-    document.getElementById('conn-dot').className = 'dot bad';
-    document.getElementById('conn-text').textContent = "Can't reach http://localhost:4000 — is your server running? (npm run dev in backend/ai-buddy-service)";
+    document.getElementById(dotId).className = "dot bad";
+    document.getElementById(textId).textContent = badLabel;
   }
 }
-checkConnection();
+ping(BUDDY_API, "dot-buddy", "text-buddy", "Connected to AI Buddy", "Can't reach :4000 — run npm run dev in backend/ai-buddy-service");
+ping(TESTS_API, "dot-tests", "text-tests", "Connected to Testing Engine", "Can't reach :4001 — run npm run dev in backend/testing-engine");
 
-// --- Auth mode toggle ---
-function setAuthMode(mode){
-  authMode = mode;
-  document.getElementById('tab-login').classList.toggle('active', mode==='login');
-  document.getElementById('tab-signup').classList.toggle('active', mode==='signup');
-  document.getElementById('name-input').style.display = mode==='signup' ? 'block' : 'none';
-  document.getElementById('auth-btn').textContent = mode==='signup' ? 'Sign up' : 'Log in';
-  document.getElementById('auth-err').classList.remove('show');
+function headers(){
+  return { "Content-Type": "application/json", "Authorization": "Bearer " + token };
 }
 
-// --- Real signup/login calls ---
+function setAuthMode(mode){
+  authMode = mode;
+  document.getElementById("tab-login").classList.toggle("active", mode==="login");
+  document.getElementById("tab-signup").classList.toggle("active", mode==="signup");
+  document.getElementById("name-input").style.display = mode==="signup" ? "block" : "none";
+  document.getElementById("auth-btn").textContent = mode==="signup" ? "Sign up" : "Log in";
+  document.getElementById("auth-err").classList.remove("show");
+}
+
+function enterApp(){
+  document.getElementById("user-name-display").textContent = userName;
+  document.getElementById("auth-view").style.display = "none";
+  document.getElementById("app-view").style.display = "block";
+  showPanel("quiz");
+}
+
 async function submitAuth(){
-  const errEl = document.getElementById('auth-err');
-  errEl.classList.remove('show');
-  const email = document.getElementById('email-input').value.trim();
-  const password = document.getElementById('password-input').value;
-  const name = document.getElementById('name-input').value.trim();
-  const btn = document.getElementById('auth-btn');
+  const errEl = document.getElementById("auth-err");
+  errEl.classList.remove("show");
+  const email = document.getElementById("email-input").value.trim();
+  const password = document.getElementById("password-input").value;
+  const name = document.getElementById("name-input").value.trim();
+  const btn = document.getElementById("auth-btn");
   btn.disabled = true;
   btn.textContent = "Please wait...";
 
   try{
-    const endpoint = authMode === 'signup' ? '/auth/signup' : '/auth/login';
-    const body = authMode === 'signup'
+    const endpoint = authMode === "signup" ? "/auth/signup" : "/auth/login";
+    const body = authMode === "signup"
       ? { name: name || "Student", email, password, role: "student" }
       : { email, password };
 
-    const res = await fetch(API_BASE + endpoint, {
+    const res = await fetch(BUDDY_API + endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
     const data = await res.json();
-
-    if(!res.ok){
-      throw new Error(data.error || "Something went wrong");
-    }
+    if(!res.ok) throw new Error(data.error || "Something went wrong");
 
     token = data.token;
     userName = data.user.name;
-    document.getElementById('user-name-display').textContent = userName;
-    document.getElementById('auth-view').style.display = 'none';
-    document.getElementById('chat-view').style.display = 'block';
+    sessionStorage.setItem("cm_token", token);
+    sessionStorage.setItem("cm_name", userName);
+    enterApp();
   }catch(e){
-    errEl.textContent = e.message + (authMode==='login' ? " — try 'Sign up' if this is your first time." : "");
-    errEl.classList.add('show');
+    errEl.textContent = e.message + (authMode==="login" ? " — try Sign up if this is your first time." : "");
+    errEl.classList.add("show");
   }finally{
     btn.disabled = false;
-    btn.textContent = authMode==='signup' ? 'Sign up' : 'Log in';
+    btn.textContent = authMode==="signup" ? "Sign up" : "Log in";
   }
 }
 
 function logout(){
   token = null;
-  document.getElementById('chat-view').style.display = 'none';
-  document.getElementById('auth-view').style.display = 'block';
-  document.getElementById('chat-msgs').innerHTML = '';
+  sessionStorage.removeItem("cm_token");
+  sessionStorage.removeItem("cm_name");
+  currentTest = null;
+  document.getElementById("app-view").style.display = "none";
+  document.getElementById("auth-view").style.display = "block";
+  document.getElementById("chat-msgs").innerHTML = "";
 }
 
-// --- Real chat call ---
-function addMsg(text, cls){
-  const msgs = document.getElementById('chat-msgs');
-  const m = document.createElement('div');
-  m.className = 'msg ' + cls;
-  m.innerHTML = text;
+function showPanel(name){
+  ["quiz","progress","chat"].forEach(p => {
+    document.getElementById("panel-" + p).style.display = p === name ? "block" : "none";
+    document.getElementById("nav-" + p).classList.toggle("active", p === name);
+  });
+  if(name === "progress") loadProgress();
+}
+
+async function loadQuiz(){
+  const take = document.getElementById("quiz-take");
+  const result = document.getElementById("quiz-result");
+  const btn = document.getElementById("quiz-load-btn");
+  result.style.display = "none";
+  result.innerHTML = "";
+  btn.disabled = true;
+  btn.textContent = "Loading...";
+  try{
+    const res = await fetch(TESTS_API + "/tests/next", { headers: headers() });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "Could not load quiz");
+    currentTest = data;
+    take.innerHTML = data.questions.map(q => `
+      <div class="q">
+        <div class="q-topic">${escapeHtml(q.topic)}</div>
+        <div class="q-prompt">${escapeHtml(q.prompt)}</div>
+        ${q.options.map(o => `
+          <label class="opt">
+            <input type="radio" name="${escapeHtml(q.id)}" value="${escapeHtml(o.id)}">
+            <span>${escapeHtml(o.text)}</span>
+          </label>
+        `).join("")}
+      </div>
+    `).join("") + `<button class="btn" onclick="submitQuiz()">Submit answers</button>`;
+    btn.style.display = "none";
+  }catch(e){
+    take.innerHTML = `<p class="err show">${escapeHtml(e.message)}</p>`;
+    btn.disabled = false;
+    btn.textContent = "Start a quiz";
+    btn.style.display = "block";
+  }
+}
+
+async function submitQuiz(){
+  if(!currentTest) return;
+  const answers = [];
+  for(const q of currentTest.questions){
+    const picked = document.querySelector(`input[name="${q.id}"]:checked`);
+    if(!picked){
+      alert("Answer every question before submitting.");
+      return;
+    }
+    answers.push({ question_id: q.id, selected_option_id: picked.value });
+  }
+
+  try{
+    const res = await fetch(TESTS_API + "/tests/submit", {
+      method: "POST",
+      headers: headers(),
+      body: JSON.stringify({ answers })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "Submit failed");
+
+    const missed = (data.results || []).filter(r => !r.correct);
+    document.getElementById("quiz-take").innerHTML = "";
+    const result = document.getElementById("quiz-result");
+    result.style.display = "block";
+    result.innerHTML = `
+      <div class="result-score">${data.score}%</div>
+      <p class="muted">${missed.length ? missed.length + " missed — explanations loading..." : "All correct. Nice work."}</p>
+      ${(data.topic_breakdown || []).map(t => `
+        <div class="bar-row">
+          <div class="bar-label"><span>${escapeHtml(t.topic)}</span><span>${t.mastery_score}/100 · ${t.attempts} attempts</span></div>
+          <div class="bar ${t.mastery_score < 60 ? "weak" : ""}"><span style="width:${t.mastery_score}%"></span></div>
+        </div>
+      `).join("")}
+      <div id="explain-box"></div>
+      ${missed.map(m => `<p class="miss">✗ ${escapeHtml(m.prompt)} — you chose “${escapeHtml(m.selected_text || "")}”, correct is “${escapeHtml(m.correct_text || "")}”.</p>`).join("")}
+    `;
+    document.getElementById("quiz-load-btn").style.display = "block";
+    document.getElementById("quiz-load-btn").disabled = false;
+    document.getElementById("quiz-load-btn").textContent = "Take another quiz";
+    currentTest = null;
+
+    if(missed.length){
+      const explRes = await fetch(BUDDY_API + "/buddy/explain-mistakes", {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify({ missed })
+      });
+      const expl = await explRes.json();
+      const box = document.getElementById("explain-box");
+      if(box) box.innerHTML = `<div class="explain">${escapeHtml(expl.explanations || "No explanation returned.")}</div>`;
+    }
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+async function loadProgress(){
+  const recEl = document.getElementById("rec-text");
+  const bars = document.getElementById("mastery-bars");
+  const reportEl = document.getElementById("report-text");
+  recEl.textContent = "Loading...";
+  bars.innerHTML = "";
+  reportEl.textContent = "";
+  try{
+    const [masteryRes, recRes, reportRes] = await Promise.all([
+      fetch(TESTS_API + "/tests/mastery", { headers: headers() }),
+      fetch(BUDDY_API + "/buddy/recommendation", { headers: headers() }),
+      fetch(BUDDY_API + "/buddy/weekly-report", { headers: headers() })
+    ]);
+    const masteryData = await masteryRes.json();
+    const rec = await recRes.json();
+    const report = await reportRes.json();
+    recEl.textContent = rec.topic ? `Next up: ${rec.topic}. ${rec.reason}` : "No recommendation yet.";
+    reportEl.textContent = (report.summary_text || "") + " " + (report.next_week_plan || "");
+    const list = masteryData.mastery || [];
+    if(!list.length){
+      bars.innerHTML = `<p class="muted">No quiz attempts yet. Take a quiz to start tracking mastery.</p>`;
+      return;
+    }
+    bars.innerHTML = list.map(t => `
+      <div class="bar-row">
+        <div class="bar-label"><span>${escapeHtml(t.topic)}</span><span>${t.mastery_score}/100 · ${t.attempts} attempts</span></div>
+        <div class="bar ${t.mastery_score < 60 ? "weak" : ""}"><span style="width:${t.mastery_score}%"></span></div>
+      </div>
+    `).join("");
+  }catch(e){
+    recEl.textContent = "Could not load progress: " + e.message;
+  }
+}
+
+function addMsg(text, cls, html){
+  const msgs = document.getElementById("chat-msgs");
+  const m = document.createElement("div");
+  m.className = "msg " + cls;
+  if(html) m.innerHTML = html;
+  else m.textContent = text;
   msgs.appendChild(m);
   msgs.scrollTop = msgs.scrollHeight;
   return m;
 }
 
 async function sendChat(){
-  const input = document.getElementById('chat-input-box');
+  const input = document.getElementById("chat-input-box");
   const text = input.value.trim();
   if(!text || !token) return;
-  input.value = '';
-  addMsg(text, 'user');
-  const typingMsg = addMsg('<span class="typing">AI Buddy is thinking...</span>', 'ai');
+  input.value = "";
+  addMsg(text, "user");
+  const typingMsg = addMsg("", "ai", '<span class="typing">AI Buddy is thinking...</span>');
 
   try{
-    const res = await fetch(API_BASE + "/buddy/chat", {
+    const res = await fetch(BUDDY_API + "/buddy/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
+      headers: headers(),
       body: JSON.stringify({ message: text })
     });
     const data = await res.json();
     typingMsg.remove();
-
     if(!res.ok){
-      addMsg(data.error || "Server returned an error.", 'error');
+      addMsg(data.error || "Server returned an error.", "error");
       return;
     }
-
-    let html = data.reply;
+    let html = escapeHtml(data.reply);
     if(data.escalate_to_mentor){
-      html += `<div class="escalate">🟠 <b>escalate_to_mentor: true</b> — real flag from the backend, topic: ${data.suggested_topic || 'unknown'}</div>`;
+      html += `<div class="escalate">🟠 Mentor recommended for topic: ${escapeHtml(data.suggested_topic || "unknown")}</div>`;
     }
-    addMsg(html, 'ai');
+    addMsg("", "ai", html);
   }catch(e){
     typingMsg.remove();
-    addMsg("Couldn't reach the server: " + e.message, 'error');
+    addMsg("Couldn't reach the server: " + e.message, "error");
   }
 }
-document.getElementById('chat-input-box').addEventListener('keydown', e=>{ if(e.key==='Enter') sendChat(); });
+document.getElementById("chat-input-box").addEventListener("keydown", e => { if(e.key==="Enter") sendChat(); });
+
+if(token) enterApp();
 </script>
 </body>
 </html>

@@ -1,0 +1,41 @@
+.wrapper {
+  width: 100%;
+  max-width: 860px; /* wider for code editors and quiz views */
+}
+
+.nav {
+  display: flex;
+  gap: var(--sp-2, 8px);
+  margin-bottom: var(--sp-5, 20px);
+}
+
+.navBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--r-md, 10px);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.navBtn:hover { color: var(--text); border-color: var(--border-2, #363d58); }
+
+.navBtn.active {
+  background: var(--ai-dim);
+  color: var(--ai);
+  border-color: var(--ai);
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg, 14px);
+  padding: 28px;
+}
+
+@media (max-width: 640px) {
+  .panel { padding: 16px; }
+  .navBtn { font-size: 11.5px; padding: 8px 4px; }
+}

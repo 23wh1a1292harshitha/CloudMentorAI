@@ -1,0 +1,86 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-right: 4px;
+}
+
+.msg {
+  max-width: 82%;
+  padding: 10px 13px;
+  border-radius: 11px;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.user {
+  align-self: flex-end;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.ai {
+  align-self: flex-start;
+  background: var(--ai-dim);
+  border: 1px solid rgba(110,139,255,.3);
+}
+
+.error {
+  align-self: flex-start;
+  background: var(--danger-dim);
+  border: 1px solid rgba(255,107,107,.3);
+  color: var(--danger);
+}
+
+.thinking {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.escalate {
+  margin-top: 8px;
+  background: var(--human-dim);
+  border: 1px solid rgba(255,168,87,.4);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.inputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+.input:focus { border-color: var(--ai); }
+
+.sendBtn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--ai);
+  background: var(--ai);
+  color: #0b0e1a;
+  font-weight: 600;
+  font-size: 13px;
+}
+.sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
