@@ -1,41 +1,108 @@
 .wrapper {
   width: 100%;
-  max-width: 860px; /* wider for code editors and quiz views */
+  max-width: 920px;
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .nav {
   display: flex;
-  gap: var(--sp-2, 8px);
-  margin-bottom: var(--sp-5, 20px);
+  gap: 12px;
+  margin-bottom: 32px;
+  padding: 6px;
+  background: var(--surface-solid);
+  backdrop-filter: blur(40px);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .navBtn {
   flex: 1;
-  padding: 10px;
-  border-radius: var(--r-md, 10px);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  padding: 14px 20px;
+  border-radius: var(--r-md);
+  background: transparent;
+  border: none;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  transition: background .12s, color .12s, border-color .12s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
-.navBtn:hover { color: var(--text); border-color: var(--border-2, #363d58); }
+
+.navBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--secondary-dim) 0%, var(--primary-dim) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.navBtn:hover:not(.active) {
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+.navBtn:hover:not(.active)::before {
+  opacity: 0.5;
+}
 
 .navBtn.active {
-  background: var(--ai-dim);
-  color: var(--ai);
-  border-color: var(--ai);
+  background: linear-gradient(135deg, var(--secondary-dim) 0%, var(--primary-dim) 100%);
+  color: var(--secondary-bright);
+  box-shadow: 0 4px 16px rgba(110, 89, 255, 0.2);
+  border: 1px solid var(--secondary);
+}
+
+.navBtn span {
+  position: relative;
+  z-index: 1;
 }
 
 .panel {
   background: var(--surface);
+  backdrop-filter: blur(40px);
   border: 1px solid var(--border);
-  border-radius: var(--r-lg, 14px);
-  padding: 28px;
+  border-radius: var(--r-2xl);
+  padding: 40px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+  animation: slideInUp 0.5s ease;
+  min-height: 500px;
 }
 
-@media (max-width: 640px) {
-  .panel { padding: 16px; }
-  .navBtn { font-size: 11.5px; padding: 8px 4px; }
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    padding: 4px;
+    gap: 8px;
+  }
+  
+  .navBtn {
+    font-size: 12px;
+    padding: 12px 12px;
+  }
+  
+  .panel {
+    padding: 24px;
+    border-radius: var(--r-lg);
+  }
 }
